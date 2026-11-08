@@ -940,8 +940,6 @@ function ChatWorkspaceContent({
 	const suppressStopped = wakingFromHibernate.current && snapshot.controller.state === "stopped";
 	// A terminated session has no agent to resume: only a restore brings it back.
 	const terminated = Boolean(session && !sessionIsActive(session));
-	// A session that moved to another computer cannot be restored here.
-	const movedTo = useSessionMovedTo(terminated ? session : undefined);
 	// After a restart the daemon is still verifying this session and reconnects
 	// its surviving agent itself. Until it settles, "stopped" is not a state to act on.
 	const startupReconnecting = snapshot.controller.state === "stopped" && !resumingAgent && !terminated &&
@@ -2113,7 +2111,8 @@ function ChatWorkspaceContent({
 						</div>
 					) : null}
 					{savedCopy || importBlock ? null : (
-						<ControllerBanner
+						<ControllerBannerForSession
+							session={terminated ? session : undefined}
 							controller={snapshot.controller}
 							quietConnect={Boolean(openingStartedAt) && !firstTurnSettled(snapshot)}
 							provisionState={orchestratorStarting ? "provisioning" : session?.provisionState}
@@ -2122,7 +2121,6 @@ function ChatWorkspaceContent({
 							automaticWakePending={suppressStopped}
 							reconnecting={startupReconnecting}
 							terminated={terminated}
-							movedTo={movedTo}
 							onResume={newWorkDisabled ? undefined : onResumeAgent}
 							resuming={resumingAgent}
 							resumeError={resumeError}
@@ -2334,8 +2332,6 @@ function ChatWorkspaceContent({
 												? setupPlaceholder
 												: controllerTransitioning || newWorkDisabled
 												? ""
-												: terminated && movedTo
-												? t("moveSession.movedHeading", { host: movedTo.label })
 												: terminated && snapshot.controller.state === "stopped"
 												? t(resumingAgent ? "shell.restoringSession" : "chat.archived.placeholder")
 												: agentResuming
@@ -2862,6 +2858,15 @@ const OPEN_ELSEWHERE_RECHECK_MS = 30_000;
  * Controller health and hibernation. A silent surface is indistinguishable from
  * an agent that is simply thinking.
  */
+/** Looks up where an archived session moved; only archived sessions need it. */
+function ControllerBannerForSession({ session, ...props }: ComponentProps<typeof ControllerBanner> & { session?: WorkspaceSession }) {
+	return session ? <MovedAwareControllerBanner session={session} {...props} /> : <ControllerBanner {...props} />;
+}
+
+function MovedAwareControllerBanner({ session, ...props }: ComponentProps<typeof ControllerBanner> & { session: WorkspaceSession }) {
+	return <ControllerBanner {...props} movedTo={useSessionMovedTo(session)} />;
+}
+
 function ControllerBanner({
 	controller,
 	provisionState,
