@@ -2810,7 +2810,7 @@ describe("Sidebar", () => {
 			"Copy path",
 			"Rename",
 			"Pin session",
-			"Move to AO Cloud…",
+			"Move to Orchestrator Cloud…",
 			"Archive session",
 		]);
 		expect(renameItem).toHaveTextContent(/^Rename$/);
