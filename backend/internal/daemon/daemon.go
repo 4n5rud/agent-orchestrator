@@ -1233,7 +1233,7 @@ func Run(buildVersion string) error {
 		UsageHooks:         usageCollector,
 		UsageSummary:       freshUsageSummary{usagesvc.NewSummaryReader(store), usagePipeline},
 		UsageReport:        freshUsageReport{usageReportReader(store, usagePricing), usagePipeline},
-		UsageLimitHistory:  usagesvc.NewLimitHistoryReader(store),
+		UsageLimitHistory:  usagesvc.NewLimitHistoryReader(store, agentAccountSvc),
 		UsageLimitSetting:  store,
 		UsagePrices:        usagePrices(usagePricing),
 		SessionMemory:      memoryReader,
