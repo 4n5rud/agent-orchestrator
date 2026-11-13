@@ -4767,5 +4767,17 @@
 	"chat.find.nextFailed": "Could not load the next matches.",
 	"chat.find.wrappedFirst": "Wrapped to the first match.",
 	"chat.find.wrappedLast": "Wrapped to the last match.",
-	"chat.find.notRevealed": "This match could not be revealed. Retry the search."
+	"chat.find.notRevealed": "This match could not be revealed. Retry the search.",
+	"command.sessionText": "Past sessions",
+	"command.searchingSessions": "Searching past sessions…",
+	"command.searchSessionsError": "Could not search past sessions.",
+	"command.noSessionMatches": "No past sessions matched.",
+	"command.searchSessionsBackfilling_one": "No matches yet — the index is still backfilling ({{count}} source pending).",
+	"command.searchSessionsBackfilling_other": "No matches yet — the index is still backfilling ({{count}} sources pending).",
+	"command.searchSessionsUnindexed": "Transcripts are not indexed for: {{harnesses}}.",
+	"command.searchSessionsUnavailable": "No matches, but the index could not finish building, so some sessions may be missing.",
+	"command.copyResumeCommand": "Copy resume command",
+	"command.recentSessions": "Recent sessions",
+	"command.sessionMatches_one": "{{count}} match",
+	"command.sessionMatches_other": "{{count}} matches"
 }

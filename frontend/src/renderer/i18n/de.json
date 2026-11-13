@@ -4787,5 +4787,17 @@
 	"chat.find.nextFailed": "Die nächsten Treffer konnten nicht geladen werden.",
 	"chat.find.wrappedFirst": "Zurück zum ersten Treffer.",
 	"chat.find.wrappedLast": "Weiter zum letzten Treffer.",
-	"chat.find.notRevealed": "Dieser Treffer konnte nicht angezeigt werden. Suche wiederholen."
+	"chat.find.notRevealed": "Dieser Treffer konnte nicht angezeigt werden. Suche wiederholen.",
+	"command.sessionText": "Frühere Sitzungen",
+	"command.searchingSessions": "Frühere Sitzungen werden durchsucht…",
+	"command.searchSessionsError": "Frühere Sitzungen konnten nicht durchsucht werden.",
+	"command.noSessionMatches": "Keine früheren Sitzungen gefunden.",
+	"command.searchSessionsBackfilling_one": "Noch keine Treffer — der Index wird noch aufgebaut ({{count}} Quelle ausstehend).",
+	"command.searchSessionsBackfilling_other": "Noch keine Treffer — der Index wird noch aufgebaut ({{count}} Quellen ausstehend).",
+	"command.searchSessionsUnindexed": "Transkripte werden nicht indiziert für: {{harnesses}}.",
+	"command.searchSessionsUnavailable": "Keine Treffer, aber der Index konnte nicht fertig erstellt werden, daher fehlen möglicherweise Sitzungen.",
+	"command.copyResumeCommand": "Fortsetzen-Befehl kopieren",
+	"command.recentSessions": "Letzte Sitzungen",
+	"command.sessionMatches_one": "{{count}} Treffer",
+	"command.sessionMatches_other": "{{count}} Treffer"
 }

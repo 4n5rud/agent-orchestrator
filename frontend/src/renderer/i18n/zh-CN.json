@@ -4769,5 +4769,17 @@
 	"chat.find.nextFailed": "无法加载后续匹配项。",
 	"chat.find.wrappedFirst": "已回到第一个匹配项。",
 	"chat.find.wrappedLast": "已回到最后一个匹配项。",
-	"chat.find.notRevealed": "无法显示此匹配项。请重新搜索。"
+	"chat.find.notRevealed": "无法显示此匹配项。请重新搜索。",
+	"command.sessionText": "过去的会话",
+	"command.searchingSessions": "正在搜索过去的会话…",
+	"command.searchSessionsError": "无法搜索过去的会话。",
+	"command.noSessionMatches": "没有匹配的过去会话。",
+	"command.searchSessionsBackfilling_one": "尚无匹配 — 索引仍在回填（{{count}} 个来源待处理）。",
+	"command.searchSessionsBackfilling_other": "尚无匹配 — 索引仍在回填（{{count}} 个来源待处理）。",
+	"command.searchSessionsUnindexed": "以下代理的转录未被索引：{{harnesses}}。",
+	"command.searchSessionsUnavailable": "没有匹配项，但索引未能完成构建，部分会话可能缺失。",
+	"command.copyResumeCommand": "复制恢复命令",
+	"command.recentSessions": "最近的会话",
+	"command.sessionMatches_one": "{{count}} 个匹配",
+	"command.sessionMatches_other": "{{count}} 个匹配"
 }
