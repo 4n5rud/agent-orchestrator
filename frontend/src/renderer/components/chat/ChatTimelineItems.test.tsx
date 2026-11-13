@@ -113,6 +113,16 @@ describe("TurnOutcome", () => {
 		expect(screen.getByText("ACP internal detail").closest("details")).toBeInTheDocument();
 	});
 
+	it("names a full disk while keeping retry and technical details", () => {
+		const onRetry = vi.fn();
+		render(<TurnOutcome state="failed" failureCode="disk_full" error="host exited (100 MB free)" retry={{ onRetry }} />);
+		expect(screen.getByText("The disk is full")).toBeInTheDocument();
+		expect(screen.getByText("Free some space on this computer, then retry this turn.")).toBeInTheDocument();
+		expect(screen.getByText("host exited (100 MB free)").closest("details")).toBeInTheDocument();
+		fireEvent.click(screen.getByRole("button", { name: "Retry this turn" }));
+		expect(onRetry).toHaveBeenCalledOnce();
+	});
+
 	it("leaves generic ACP failures without configuration guidance", () => {
 		render(<TurnOutcome state="failed" error="ACP internal detail" />);
 		expect(screen.getByText("ACP internal detail")).toBeInTheDocument();

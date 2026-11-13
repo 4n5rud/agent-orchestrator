@@ -6592,7 +6592,7 @@ export interface components {
             diff?: components["schemas"]["ConversationTurnDiffResponse"];
             errorMessage?: string;
             /** @enum {string} */
-            failureCode?: "provider_key_missing";
+            failureCode?: "provider_key_missing" | "disk_full";
             hasHumanPrompt?: boolean;
             hasRetryAttempt?: boolean;
             id: string;

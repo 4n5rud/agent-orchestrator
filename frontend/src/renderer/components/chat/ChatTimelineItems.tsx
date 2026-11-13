@@ -650,7 +650,7 @@ export function TurnOutcome({
 }: {
 	state: "recovered" | "interrupted" | "failed" | "unknown" | "not_run";
 	error?: string;
-	failureCode?: "provider_key_missing";
+	failureCode?: "provider_key_missing" | "disk_full";
 	onConfigure?: () => void;
 	usageLimit?: ConversationUsageLimit;
 } & TurnActionsProps) {
@@ -681,21 +681,34 @@ export function TurnOutcome({
 	}
 	const copy = TURN_OUTCOME_COPY[state];
 	const Icon = copy.icon;
-	const needsDeepSeekKey = state === "failed" && failureCode === "provider_key_missing" && onConfigure;
+	const guidance =
+		state !== "failed"
+			? undefined
+			: failureCode === "provider_key_missing" && onConfigure
+				? {
+						title: "DeepSeek needs an API key for this model route",
+						body: "Set up the key in DeepSeek Harness, then retry this turn.",
+						action: (
+							<Button type="button" variant="primary" size="sm" onClick={onConfigure} className="ml-[22px] w-fit">
+								Set up DeepSeek
+							</Button>
+						),
+					}
+				: failureCode === "disk_full"
+					? { title: "The disk is full", body: "Free some space on this computer, then retry this turn.", action: null }
+					: undefined;
 	return (
 		// A stopped turn is three short lines, so they sit close: 4px under "Worked for",
 		// as an answer's action row does, not the turn's 10px.
 		<div className="group/message -mt-1.5 flex min-w-0 flex-col gap-1.5" data-turn-outcome={state}>
 			<div className="flex min-w-0 items-start gap-2">
 				<Icon aria-hidden="true" className={cn("mt-[3px] size-3.5 shrink-0", copy.iconTone)} />
-				<span className={cn("min-w-0 text-sm leading-5", copy.tone)}>
-					{needsDeepSeekKey ? "DeepSeek needs an API key for this model route" : copy.label}
-				</span>
+				<span className={cn("min-w-0 text-sm leading-5", copy.tone)}>{guidance?.title ?? copy.label}</span>
 			</div>
-			{needsDeepSeekKey ? (
+			{guidance ? (
 				<>
-					<p className="pl-[22px] text-sm text-foreground">Set up the key in DeepSeek Harness, then retry this turn.</p>
-					<Button type="button" variant="primary" size="sm" onClick={onConfigure} className="ml-[22px] w-fit">Set up DeepSeek</Button>
+					<p className="pl-[22px] text-sm text-foreground">{guidance.body}</p>
+					{guidance.action}
 					{error ? (
 						<details className="pl-[22px] text-sm text-muted-foreground">
 							<summary className="cursor-pointer">Technical details</summary>
@@ -718,7 +731,7 @@ export function TurnOutcome({
 				</div>
 			) : null}
 			<TurnActions
-				className={error || needsDeepSeekKey ? undefined : "-mt-1"}
+				className={error || guidance ? undefined : "-mt-1"}
 				retry={retry}
 				copyText={copyText}
 				onRollback={onRollback}

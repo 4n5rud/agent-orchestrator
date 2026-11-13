@@ -631,6 +631,9 @@ type ConversationFailureCode string
 // ConversationFailureProviderKeyMissing means the provider route lacks a configured API key.
 const ConversationFailureProviderKeyMissing ConversationFailureCode = "provider_key_missing"
 
+// ConversationFailureDiskFull means the agent's process stopped while the disk was nearly full.
+const ConversationFailureDiskFull ConversationFailureCode = "disk_full"
+
 // ConversationTurnDiff is the turn's changed-file summary.
 //
 // Per-turn state rather than a timeline entry: the provider re-sends the whole

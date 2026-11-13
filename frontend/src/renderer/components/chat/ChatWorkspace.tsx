@@ -6345,7 +6345,7 @@ type TimelineGroup = {
 		durationMs?: number;
 		error?: string;
 		usageLimit?: ConversationUsageLimit;
-		failureCode?: "provider_key_missing";
+		failureCode?: "provider_key_missing" | "disk_full";
 	};
 	/** What the turn changed on disk, when the daemon reported anything. */
 	diff?: TurnDiff;

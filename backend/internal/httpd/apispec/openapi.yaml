@@ -19112,6 +19112,7 @@ components:
         failureCode:
           enum:
           - provider_key_missing
+          - disk_full
           type: string
         hasHumanPrompt:
           type: boolean
