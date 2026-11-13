@@ -82,6 +82,8 @@ type APIDeps struct {
 	SessionCapabilities      controllers.SessionCapabilityValidator
 	ShellPreviewCapabilities controllers.ShellPreviewCapabilityValidator
 	SystemChecks             controllers.SystemChecker
+	// Storage measures and cleans AO's disk usage; nil answers 501.
+	Storage controllers.StorageService
 	// HostID is this machine's stable, machine-bound identity, served by the
 	// unauthenticated GET /api/v1/identity probe so a phone can confirm which
 	// machine answered before presenting a credential.
@@ -170,6 +172,7 @@ type API struct {
 	dev           *controllers.DevController
 	browser       *controllers.BrowserController
 	system        *controllers.SystemController
+	storage       *controllers.StorageController
 	identity      *controllers.IdentityController
 	endpoints     *controllers.EndpointsController
 	telemetryID   *controllers.TelemetryIdentityController
@@ -236,6 +239,7 @@ func newAPIWithLogger(cfg config.Config, deps APIDeps, log *slog.Logger) *API {
 		dev:           &controllers.DevController{Import: deps.DevImport},
 		browser:       &controllers.BrowserController{Svc: deps.Browser, Chrome: deps.BrowserChrome},
 		system:        &controllers.SystemController{Checks: deps.SystemChecks},
+		storage:       &controllers.StorageController{Svc: deps.Storage},
 		identity:      &controllers.IdentityController{HostID: deps.HostID},
 		endpoints:     &controllers.EndpointsController{Source: deps.Endpoints},
 		telemetryID:   &controllers.TelemetryIdentityController{Source: deps.TelemetryIdentity, LifetimeSessions: deps.LifetimeSessions},
@@ -382,6 +386,7 @@ func (a *API) Register(root chi.Router) {
 			a.dev.Register(r)
 			a.browser.Register(r)
 			a.system.Register(r)
+			a.storage.Register(r)
 			a.identity.Register(r)
 			a.endpoints.Register(r)
 			a.telemetryID.Register(r)

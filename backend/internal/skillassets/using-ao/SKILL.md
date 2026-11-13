@@ -31,6 +31,7 @@ trigger: "Using the `ao` CLI, importing existing agent sessions, or managing Orc
 | `stop` | Stop the Orchestrator daemon | Shutting down Orchestrator | [commands/stop.md](commands/stop.md) |
 | `status` | Show daemon status | Verifying the daemon is up and healthy | [commands/status.md](commands/status.md) |
 | `doctor` | Run local health checks | Diagnosing Orchestrator setup problems | [commands/doctor.md](commands/doctor.md) |
+| `storage` | Show and free the disk space Orchestrator uses | The user asks why Orchestrator takes so much space or wants it cleaned up | [commands/storage.md](commands/storage.md) |
 | `import` | Import projects from a legacy Orchestrator install | Migrating from the old flat-file store | [commands/import.md](commands/import.md) |
 | `version` | Print version information | Checking installed version | - |
 | `completion` | Generate shell completion scripts | Setting up tab completion | - |
