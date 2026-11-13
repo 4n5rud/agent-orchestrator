@@ -6219,6 +6219,16 @@ export interface components {
             callerSessionId?: string;
             deleteArtifacts?: boolean;
         };
+        ControllersMoveImportTranscript: {
+            agentSessionId: string;
+            /** @description The Claude project folder the transcript was in on Orchestrator Cloud; its paths and the sandbox's working directory become this machine's. */
+            projectDir: string;
+            /**
+             * Format: base64
+             * @description The transcript, gzipped and base64-encoded.
+             */
+            transcriptGzip: string;
+        };
         ControllersMoveTranscriptInfo: {
             /** Format: int64 */
             bytes: number;
@@ -7442,6 +7452,7 @@ export interface components {
             manifest: components["schemas"]["MoveManifest"];
             moveId: string;
             projectId: string;
+            transcript?: components["schemas"]["ControllersMoveImportTranscript"];
         };
         MoveImportResponse: {
             session: components["schemas"]["ControllersSessionView"];
