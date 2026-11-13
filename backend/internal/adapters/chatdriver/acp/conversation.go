@@ -12,6 +12,7 @@ import (
 	"strconv"
 	"strings"
 	"sync"
+	"sync/atomic"
 	"time"
 
 	acpsdk "github.com/coder/acp-go-sdk"
@@ -31,6 +32,7 @@ const (
 	sessionCloseWait      = 2 * time.Second
 	quickSessionCloseWait = 500 * time.Millisecond
 	lowDiskSpaceBytes     = 512 << 20
+	hostExitSettleWait    = 5 * time.Second
 )
 
 var (
@@ -205,6 +207,7 @@ type conversation struct {
 	eventMu      sync.RWMutex
 	events       chan ports.ChatEvent
 	eventsClosed bool
+	hostGone     atomic.Bool
 	closeOnce    sync.Once
 	closing      chan struct{}
 
@@ -1439,6 +1442,7 @@ func (c *conversation) watchConnection() {
 	c.mu.Unlock()
 	hostExited := preserve && c.proc.hostExited != nil && c.proc.hostExited()
 	preserve = preserve && !hostExited
+	c.hostGone.Store(hostExited)
 	// SDK Done cancels only its logical connection. Release both the forwarding
 	// pipe and the actual socket, including a host blocked writing replay under
 	// its ownership lock. Stopping this transport must not terminate the host.
@@ -1450,9 +1454,8 @@ func (c *conversation) watchConnection() {
 	}
 	var events []ports.ChatEvent
 	if hostExited {
-		if failed, ok := c.hostExitedTurn(); ok {
-			events = append(events, failed)
-		}
+		c.awaitSettlingTurn()
+		events = c.hostExitedTurn()
 	}
 	stopped := ports.ChatEvent{Kind: ports.ChatEventControllerState, ControllerState: ports.ChatControllerStopped}
 	if preserve {
@@ -1475,12 +1478,26 @@ func (c *conversation) watchConnection() {
 	c.eventMu.Unlock()
 }
 
-func (c *conversation) hostExitedTurn() (ports.ChatEvent, bool) {
+func (c *conversation) awaitSettlingTurn() {
+	deadline := time.Now().Add(hostExitSettleWait)
+	for {
+		c.mu.Lock()
+		settling := c.activeTurn != "" && c.settlingTurn == c.activeTurn
+		c.mu.Unlock()
+		if !settling || time.Now().After(deadline) {
+			return
+		}
+		time.Sleep(10 * time.Millisecond)
+	}
+}
+
+func (c *conversation) hostExitedTurn() []ports.ChatEvent {
 	c.mu.Lock()
 	turnID := c.activeTurn
+	compacting := turnID != "" && c.compactingTurnID == turnID
 	c.mu.Unlock()
 	if turnID == "" {
-		return ports.ChatEvent{}, false
+		return nil
 	}
 	c.log.Warn("chat: persistent ACP host exited during a turn", "turn", turnID)
 	event := ports.ChatEvent{
@@ -1491,7 +1508,10 @@ func (c *conversation) hostExitedTurn() (ports.ChatEvent, bool) {
 		event.FailureCode = domain.ConversationFailureDiskFull
 		event.Err = fmt.Errorf("the agent's process exited while the disk was nearly full (%d MB free)", free>>20)
 	}
-	return event, true
+	if compacting {
+		return []ports.ChatEvent{{Kind: ports.ChatEventError, ProviderTurnID: turnID, Err: event.Err}, event}
+	}
+	return []ports.ChatEvent{event}
 }
 
 func (c *conversation) emit(event ports.ChatEvent) {
@@ -1506,9 +1526,13 @@ func (c *conversation) emit(event ports.ChatEvent) {
 	if c.proc != nil && c.proc.terminate != nil {
 		// Host-journaled frames must reach durable projection; dropping one here
 		// would make a successful replay look exactly-once while losing content.
+		done := c.conn.Done()
+		if c.hostGone.Load() {
+			done = nil
+		}
 		select {
 		case c.events <- event:
-		case <-c.conn.Done():
+		case <-done:
 		case <-c.closing:
 		}
 		return
